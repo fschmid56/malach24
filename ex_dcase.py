@@ -1,23 +1,22 @@
 import pytorch_lightning as pl
 from pytorch_lightning.loggers import WandbLogger
-from pytorch_lightning.callbacks import LearningRateMonitor
 import torch
 from torch.utils.data import DataLoader
 import argparse
 import torch.nn.functional as F
+import transformers
 
 from datasets.audiodataset import get_val_set, get_training_set
 from models.cnn import get_model
 from models.mel import AugmentMelSTFT
 from helpers.init import worker_init_fn
 from helpers.mixup import mixup
-from helpers.lr_schedule import exp_warmup_linear_down
 
 
 class SimpleDCASELitModule(pl.LightningModule):
     """
     This is a Pytorch Lightening Module.
-    It has several convenient abstractions, e.g. we don't have to specify all parts of the
+    It has several convenient abstractions, e.g., we don't have to specify all parts of the
     training loop (optimizer.step(), loss.backward()) ourselves.
     """
 
@@ -45,6 +44,12 @@ class SimpleDCASELitModule(pl.LightningModule):
                                channels_multiplier=config.channels_multiplier
                                )
 
+        # These are containers we can use to store metrics computed
+        # in 'training_step' and 'validation_step'. The containers can then be processed
+        # in 'on_train_epoch_end' and 'on_validation_epoch_end'.
+        self.training_step_outputs = []
+        self.validation_step_outputs = []
+
     def mel_forward(self, x):
         """
         @param x: a batch of raw signals (waveform)
@@ -71,11 +76,18 @@ class SimpleDCASELitModule(pl.LightningModule):
         The specified items are used automatically in the optimization loop (no need to call optimizer.step() yourself).
         :return: dict containing optimizer and learning rate scheduler
         """
-        optimizer = torch.optim.Adam(self.parameters(), lr=self.config.lr, weight_decay=self.config.weight_decay)
-        schedule_lambda = \
-            exp_warmup_linear_down(self.config.warm_up_len, self.config.ramp_down_len, self.config.ramp_down_start,
-                                   self.config.last_lr_value)
-        lr_scheduler = torch.optim.lr_scheduler.LambdaLR(optimizer, schedule_lambda)
+        optimizer = torch.optim.Adam(self.parameters(),
+                                     lr=self.config.lr,
+                                     weight_decay=self.config.weight_decay)
+
+        num_training_steps = self.trainer.estimated_stepping_batches
+        # cosine learning rate schedule
+        lr_scheduler = transformers.get_cosine_schedule_with_warmup(
+            optimizer,
+            num_warmup_steps=self.config.num_warmup_steps,
+            num_training_steps=num_training_steps,
+        )
+
         return {
             'optimizer': optimizer,
             'lr_scheduler': lr_scheduler
@@ -117,15 +129,16 @@ class SimpleDCASELitModule(pl.LightningModule):
 
         loss = samples_loss.mean()
         results = {"loss": loss}
-        return results
+        # log learning rate, number of epoch, loss on each step
+        self.log('trainer/lr', self.trainer.optimizers[0].param_groups[0]['lr'])
+        self.log('epoch', self.current_epoch)
+        self.log("train/loss", loss.detach().cpu())
+        return results['loss']
 
-    def training_epoch_end(self, outputs):
-        """
-        :param outputs: contains the items you log in 'training_step'
-        :return: a dict containing the metrics you want to log to Weights and Biases
-        """
-        avg_loss = torch.stack([x['loss'] for x in outputs]).mean()
-        self.log_dict({'loss': avg_loss})
+    def on_train_epoch_end(self):
+        # do some stuff at the end of a train epoch
+        # nothing to do in our case
+        pass
 
     def validation_step(self, val_batch, batch_idx):
         # similar to 'training_step' but without any data augmentation
@@ -133,21 +146,40 @@ class SimpleDCASELitModule(pl.LightningModule):
         x, y = val_batch
         x = self.mel_forward(x)
         y_hat = self.model(x)
-        loss = F.cross_entropy(y_hat, y)
-        return {'val_loss': loss}
+        samples_loss = F.cross_entropy(y_hat, y, reduction="none")
 
-    def validation_epoch_end(self, outputs):
-        # log validation metric to weights and biases
-        avg_loss = torch.stack([x['val_loss'] for x in outputs]).mean()
-        self.log_dict({'val_loss': avg_loss})
+        # results dict contains only 'loss' for this example
+        # you could, e.g., also store predictions and labels in the container
+        results = {'loss': samples_loss}
+        results = {k: v.cpu() for k, v in results.items()}
+        self.validation_step_outputs.append(results)
+
+    def on_validation_epoch_end(self):
+        # process results from 'validation_step'
+        # logging only 'loss' could be done much simpler than code piece below,
+        # however this is a more general solution
+        outputs = {k: [] for k in self.validation_step_outputs[0]}
+        for step_output in self.validation_step_outputs:
+            for k in step_output:
+                outputs[k].append(step_output[k])
+        for k in outputs:
+            outputs[k] = torch.cat(outputs[k])
+
+        avg_loss = outputs['loss'].mean()
+        logs = {'val/loss': torch.as_tensor(avg_loss).cuda()}
+
+        self.log_dict(logs, sync_dist=True)
+
+        # clear container
+        self.validation_step_outputs.clear()
 
 
 def train(config):
     # logging is done using wandb
     wandb_logger = WandbLogger(
-        project="DCASE23",
-        notes="Test pipeline for DCASE23 tasks.",
-        tags=["DCASE23"],
+        project="DCASE24_Setup_Test",
+        notes="Test audio pipeline for DCASE24 tasks.",
+        tags=["DCASE24"],
         config=config,  # this logs all hyperparameters for us
         name=config.experiment_name
     )
@@ -167,14 +199,11 @@ def train(config):
 
     # create pytorch lightening module
     pl_module = SimpleDCASELitModule(config)
-    # create monitor to keep track of learning rate - we want to check the behaviour of our learning rate schedule
-    lr_monitor = LearningRateMonitor(logging_interval='epoch')
     # create the pytorch lightening trainer by specifying the number of epochs to train, the logger,
     # on which kind of device(s) to train and possible callbacks
     trainer = pl.Trainer(max_epochs=config.n_epochs,
                          logger=wandb_logger,
-                         accelerator='auto',
-                         callbacks=[lr_monitor])
+                         accelerator='auto')
     # start training and validation
     trainer.fit(pl_module, train_dataloaders=train_dl, val_dataloaders=val_dl)
 
@@ -203,20 +232,12 @@ if __name__ == '__main__':
 
     # training
     parser.add_argument('--batch_size', type=int, default=16)
-    parser.add_argument('--n_epochs', type=int, default=50)
+    parser.add_argument('--n_epochs', type=int, default=200)
     parser.add_argument('--mixup_alpha', type=float, default=0.0)
     parser.add_argument('--weight_decay', type=float, default=0.0001)
     # learning rate + schedule
-    # phases:
-    #  1. exponentially increasing warmup phase (for 'warm_up_len' epochs)
-    #  2. constant lr phase using value specified in 'lr' (for 'ramp_down_start' - 'warm_up_len' epochs)
-    #  3. linearly decreasing to value 'las_lr_value' * 'lr' (for 'ramp_down_len' epochs)
-    #  4. finetuning phase using a learning rate of 'last_lr_value' * 'lr' (for the rest of epochs up to 'n_epochs')
     parser.add_argument('--lr', type=float, default=3e-4)
-    parser.add_argument('--warm_up_len', type=int, default=6)
-    parser.add_argument('--ramp_down_start', type=int, default=20)
-    parser.add_argument('--ramp_down_len', type=int, default=10)
-    parser.add_argument('--last_lr_value', type=float, default=0.01)  # relative to 'lr'
+    parser.add_argument('--num_warmup_steps', type=int, default=100)
 
     # preprocessing
     parser.add_argument('--resample_rate', type=int, default=32000)
