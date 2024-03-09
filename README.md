@@ -18,17 +18,17 @@ Start by creating a conda environment:
 conda create -n malach24 python=3.11
 ```
 
+Activate your environment:
+```
+conda activate malach24
+```
+
 Install the pytorch version that suits your system. For example:
 
 ```
 pip3 install torch torchvision torchaudio --index-url https://download.pytorch.org/whl/cu118
 # or for cuda >= 12.1
 pip3 install torch torchvision torchaudio 
-```
-
-Activate your environment:
-```
-conda activate malach24
 ```
 
 Fork this GitHub Repo to your own GitHub account (select the 'Fork' symbol on menu in the upper right corner on this page).
