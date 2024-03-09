@@ -7,6 +7,6 @@ tqdm
 wandb
 pandas
 notebook
-matplotlib
+matplotlib~=3.7
 pytorch-lightning
 transformers
