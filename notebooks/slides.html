@@ -13650,7 +13650,7 @@ $$X[k]=\frac{1}{N} \sum_{n=0}^{N-1} \underbrace{x[n] \cos(\frac{-2\pi k n}{N})}_
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Mel-Spectrogram">Mel Spectrogram<a class="anchor-link" href="#Mel-Spectrogram">&#182;</a></h2><center>
+<h2 id="Mel-Filterbank">Mel Filterbank<a class="anchor-link" href="#Mel-Filterbank">&#182;</a></h2><center>
 <img src="figs/mel_filterbank.png" alt="drawing" width="600"/>
 </center>
 </div>
@@ -14088,7 +14088,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Why-the-'Log'-in-amplitude?">Why the 'Log' in amplitude?<a class="anchor-link" href="#Why-the-'Log'-in-amplitude?">&#182;</a></h2><p><strong>Perceived loudness</strong> and <strong>sound power</strong> have an <strong>logarithmic relationship</strong>. Increasing the sound power by a factor of 10 increases the perceived loudness by about a factor of 2. We account for that by taking the logarithm of sound power in our preprocessing pipeline.</p>
+<h2 id="Why-the-'Log'-in-amplitude?">Why the 'Log' in amplitude?<a class="anchor-link" href="#Why-the-'Log'-in-amplitude?">&#182;</a></h2><p><strong>Perceived loudness</strong> and <strong>sound power</strong> have a <strong>logarithmic relationship</strong>. Increasing the sound power by a factor of 10 increases the perceived loudness by about a factor of 2. We account for that by taking the logarithm of sound power in our preprocessing pipeline.</p>
 
 </div>
 </div>
@@ -14212,14 +14212,14 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 <div class="cell border-box-sizing text_cell rendered"><div class="prompt input_prompt">
 </div><div class="inner_cell">
 <div class="text_cell_render border-box-sizing rendered_html">
-<h2 id="Example-Pipeline-on-GitHub">Example Pipeline on GitHub<a class="anchor-link" href="#Example-Pipeline-on-GitHub">&#182;</a></h2><p>The <a href=https://github.com/fschmid56/malach23-pipeline> example ML4Audio pipeline </a> demonstrates the following points based on 200 wav files:</p>
+<h2 id="Example-Pipeline-on-GitHub">Example Pipeline on GitHub<a class="anchor-link" href="#Example-Pipeline-on-GitHub">&#182;</a></h2><p>The <a href=https://github.com/fschmid56/malach24> example ML4Audio pipeline </a> demonstrates the following points based on 200 wav files:</p>
 <ul>
 <li>Dataset loading, PyTorch Dataset class, PyTorch Dataloader</li>
 <li>our pre-processing routine that we discussed today</li>
 <li>how to use a PyTorch Model (CNN) to generate predictions based on a log mel spectrogram</li>
 <li>simple data augmentation techniques (masking time frames, masking frequency bands, mixup, time rolling)</li>
-<li>a training loop implemented with PyTorch Lightening</li>
-<li>logging implemented with Weights and Biases</li>
+<li>a training loop implemented with <a href=https://lightning.ai/>Pytorch Lightning</a></li>
+<li>logging implemented with <a href=https://wandb.ai/site>Weights and Biases</a></li>
 <li><strong>some</strong> of the best practices we discussed today</li>
 </ul>
 
