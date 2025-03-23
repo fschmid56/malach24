@@ -1,37 +1,19 @@
-import torch
-import numpy as np
 import random
+import numpy as np
+import torch
 
 
-def worker_init_fn(wid):
+def worker_init_fn(wid, seed=None):
     """
-    Don't get confused here. This function is passed to Pytorch dataloader and makes sure
-    that python random, numpy and torch are seeded appropriately.
+    Fully deterministic worker seed initialization for DataLoader workers.
+    Seeds Python's random, NumPy, and PyTorch.
     """
-    seed_sequence = np.random.SeedSequence(
-        [torch.initial_seed(), wid]
-    )
+    base_seed = seed if seed is not None else torch.initial_seed()
+    seed_seq = np.random.SeedSequence([base_seed, wid])
 
-    to_seed = spawn_get(seed_sequence, 2, dtype=int)
-    torch.random.manual_seed(to_seed)
+    # Derive independent seeds for the three RNGs
+    child_seeds = seed_seq.generate_state(3, dtype=np.uint32)
 
-    np_seed = spawn_get(seed_sequence, 2, dtype=np.ndarray)
-    np.random.seed(np_seed)
-
-    py_seed = spawn_get(seed_sequence, 2, dtype=int)
-    random.seed(py_seed)
-
-
-def spawn_get(seedseq, n_entropy, dtype):
-    child = seedseq.spawn(1)[0]
-    state = child.generate_state(n_entropy, dtype=np.uint32)
-
-    if dtype == np.ndarray:
-        return state
-    elif dtype == int:
-        state_as_int = 0
-        for shift, s in enumerate(state):
-            state_as_int = state_as_int + int((2 ** (32 * shift) * s))
-        return state_as_int
-    else:
-        raise ValueError(f'not a valid dtype "{dtype}"')
+    torch.manual_seed(int(child_seeds[0]))
+    np.random.seed(int(child_seeds[1]))
+    random.seed(int(child_seeds[2]))

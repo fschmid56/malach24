@@ -5,6 +5,12 @@ from torch.utils.data import DataLoader
 import argparse
 import torch.nn.functional as F
 import transformers
+from functools import partial
+import secrets
+import subprocess
+import sys
+import numpy as np
+
 
 from datasets.audiodataset import get_val_set, get_training_set
 from models.cnn import get_model
@@ -186,14 +192,15 @@ def train(config):
 
     # train dataloader
     train_dl = DataLoader(dataset=get_training_set(config.cache_path, config.resample_rate, config.roll),
-                          worker_init_fn=worker_init_fn,
+                          worker_init_fn=partial(worker_init_fn, seed=config.SEED),
+                          generator=torch.Generator().manual_seed(config.SEED),
                           num_workers=config.num_workers,
                           batch_size=config.batch_size,
                           shuffle=True)
 
     # test loader
     val_dl = DataLoader(dataset=get_val_set(config.cache_path, config.resample_rate),
-                        worker_init_fn=worker_init_fn,
+                        worker_init_fn=partial(worker_init_fn, seed=config.SEED),
                         num_workers=config.num_workers,
                         batch_size=config.batch_size)
 
@@ -214,8 +221,10 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Example of parser. ')
 
     # general
-    parser.add_argument('--experiment_name', type=str, default="DCASE23")
+    parser.add_argument('--experiment_name', type=str, default="DCASE25")
     parser.add_argument('--num_workers', type=int, default=12)  # number of workers for dataloaders
+    parser.add_argument('--SEED', type=int, default=None)
+    parser.add_argument('--make_deterministic', default=False, action='store_true')
 
     # dataset
     # location to store resample waveform
@@ -253,4 +262,32 @@ if __name__ == '__main__':
     parser.add_argument('--fmax_aug_range', type=int, default=1000)
 
     args = parser.parse_args()
+
+    if args.SEED is None:
+        args.SEED = secrets.randbelow(2**32)
+
+    pl.seed_everything(args.SEED, workers=True)
+
+    if args.make_deterministic:
+        # you may need to set the environment variable 'CUBLAS_WORKSPACE_CONFIG=:4096:8' for this to work
+        torch.use_deterministic_algorithms(True)
+        torch.backends.cudnn.deterministic = True
+        torch.backends.cudnn.benchmark = False
+
+    # add commit hash to logger
+    try:
+        commit_hash = subprocess.check_output(["git", "rev-parse", "HEAD"]).decode("ascii").strip()
+    except Exception:
+        commit_hash = "unknown"
+
+    args.commit_hash = commit_hash  # include in logged config
+
+    # save library versions for reproducibility
+    args.versions = {
+        "python": sys.version.split(" ")[0],
+        "torch": torch.__version__,
+        "pytorch_lightning": pl.__version__,
+        "numpy": np.__version__
+    }
+
     train(args)
