@@ -7457,10 +7457,10 @@ main {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Are-we-complete?">Are we complete?<a class="anchor-link" href="#Are-we-complete?">¶</a></h1><ul>
-<li>Team Task 1?</li>
-<li>Team Task 4?</li>
-<li>Team Task 6?</li>
-<li>Team AES: QVIM?</li>
+<li>Team Task 1 (Ioan-Cristian, Dominik, Michael, Anna)?</li>
+<li>Team Task 4 (Aleksandr, Fabian, Lara, Maximilian)?</li>
+<li>Team Task 6 (Giovanni, Fabian, Youniss)?</li>
+<li>Team AES: QVIM (Andrei, Anton Atanasov, Aleksandar)?</li>
 </ul>
 </div>
 </div>
@@ -8044,13 +8044,13 @@ Before running full experiments, verify new code together — four eyes catch mo
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="The-Sampling-Theorem">The Sampling Theorem<a class="anchor-link" href="#The-Sampling-Theorem">¶</a></h2><ul>
-<li><p>A continuous (analog) signal can be "<strong>properly sampled</strong>" if it contains <strong>no frequency components above half the sampling rate</strong></p>
+<li><p>If the signal is "<strong>properly sampled</strong>", it can be <strong>reconstructed exactly</strong> from its samples</p>
+</li>
+<li><p>A continuous (analog) signal is "<strong>properly sampled</strong>" if it contains <strong>no frequency components above half the sampling rate</strong></p>
 <ul>
 <li>This limit is called the <strong>Nyquist frequency</strong></li>
 <li>Example: for a sampling rate of 44,100 Hz → Nyquist frequency = 22,050 Hz</li>
 </ul>
-</li>
-<li><p>If the signal meets this condition, it can be <strong>reconstructed exactly</strong> from its samples</p>
 </li>
 <li><p>Frequencies <strong>above the Nyquist limit</strong> will be <strong>aliased</strong> — incorrectly folded into lower frequencies:
 → results in <strong>distortion</strong> and <strong>irrecoverable information loss</strong></p>
@@ -8154,7 +8154,7 @@ $$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Discrete-Fourier-Transform">Discrete Fourier Transform<a class="anchor-link" href="#Discrete-Fourier-Transform">¶</a></h2><p>Basis functions for 16-point DFT:</p>
+<h2 id="Discrete-Fourier-Transform-(DFT)">Discrete Fourier Transform (DFT)<a class="anchor-link" href="#Discrete-Fourier-Transform-(DFT)">¶</a></h2><p>Basis functions for 16-point DFT:</p>
 <center>
 <img alt="drawing" src="figs/basis.png" width="400"/>
 </center>
@@ -8352,7 +8352,7 @@ $$</p>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h2 id="Short-Time-Fourier-Transform-(STFT)">Short-Time Fourier Transform (STFT)<a class="anchor-link" href="#Short-Time-Fourier-Transform-(STFT)">¶</a></h2><ul>
-<li>A regular DFT gives us <strong>frequency content</strong>, but tells us <strong>nothing about when</strong> things happen</li>
+<li>A regular DFT tells us <strong>nothing about when</strong> things happen</li>
 <li>The <strong>Short-Time Fourier Transform</strong> (STFT) computes a <strong>time–frequency representation</strong> (spectrogram) by:<ul>
 <li>Splitting the signal into <strong>short, overlapping windows</strong></li>
 <li>Computing the <strong>DFT separately for each window</strong></li>
@@ -8417,7 +8417,7 @@ $$</p>
 </li>
 <li><p>This can be implemented as a <strong>matrix multiplication</strong>:<br/>
 $$
-\texttt{mel\_spec} = \mathrm{torch.matmul}(\texttt{mel\_filterbank}, \texttt{spectrogram})
+\mathrm{mel\_spec} = \mathrm{torch.matmul}(\mathrm{mel\_filterbank}, \mathrm{spectrogram})
 $$</p>
 </li>
 <li><p>Purpose:</p>
@@ -8617,14 +8617,13 @@ $$</p>
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [11]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [18]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">n_fft</span><span class="p">,</span> <span class="n">win_length</span><span class="p">,</span> <span class="n">hop_length</span> <span class="o">=</span> <span class="mi">1024</span><span class="p">,</span> <span class="mi">800</span><span class="p">,</span> <span class="mi">320</span> 
-<span class="n">window</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hann_window</span><span class="p">(</span><span class="n">win_length</span><span class="p">,</span> <span class="n">periodic</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+<span class="n">window</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">hann_window</span><span class="p">(</span><span class="n">win_length</span><span class="p">)</span>
 <span class="n">spec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stft</span><span class="p">(</span><span class="n">wav_pree</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="n">n_fft</span><span class="p">,</span> <span class="n">hop_length</span><span class="o">=</span><span class="n">hop_length</span><span class="p">,</span>
-                  <span class="n">win_length</span><span class="o">=</span><span class="n">win_length</span><span class="p">,</span> <span class="n">center</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span>
-                  <span class="n">normalized</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> 
+                  <span class="n">win_length</span><span class="o">=</span><span class="n">win_length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> 
                   <span class="n">return_complex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
 <span class="nb">print</span><span class="p">(</span><span class="s2">"Complex spec shape: "</span><span class="p">,</span> <span class="n">spec</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
 <span class="n">spec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">view_as_real</span><span class="p">(</span><span class="n">spec</span><span class="p">)</span>
@@ -8667,7 +8666,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [12]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [19]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">wav_plot</span><span class="p">(</span><span class="n">window</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">sr</span><span class="p">,</span> <span class="n">listen</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Hann window (time-domain)"</span><span class="p">)</span>
@@ -8693,7 +8692,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [13]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [21]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="n">spec_liro</span><span class="p">(</span><span class="n">mag_spec</span><span class="o">.</span><span class="n">squeeze</span><span class="p">()</span><span class="o">.</span><span class="n">numpy</span><span class="p">(),</span> <span class="n">sr</span><span class="p">,</span> <span class="n">x_is_spec</span><span class="o">=</span><span class="kc">True</span><span class="p">,</span> <span class="n">convert_to_db</span><span class="o">=</span><span class="kc">False</span><span class="p">,</span> <span class="n">title</span><span class="o">=</span><span class="s2">"Magnitude Spectrogram"</span><span class="p">)</span>
@@ -8846,6 +8845,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 <li>The human ear <strong>does not perceive loudness linearly</strong>:<ul>
 <li>A <strong>10× increase in sound power</strong> results in only a <strong>2× increase in perceived loudness</strong></li>
 <li>This is a <strong>logarithmic relationship</strong> between physical intensity and perception</li>
+<li>This is why we use the <strong>decibel (dB)</strong> scale</li>
 </ul>
 </li>
 </ul>
@@ -8926,7 +8926,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Until-02.04.25">Until 02.04.25<a class="anchor-link" href="#Until-02.04.25">¶</a></h1><p>Prepare a <strong>short presentation</strong> (<strong>10 minutes</strong>) introducing the <strong>baseline system</strong> for your task.</p>
 <ul>
-<li>The <strong>baseline code</strong> will be available <strong>by the end of this week or early next week</strong> for: Task 1, 6, AES QVIM.</li>
+<li>The <strong>baseline code</strong> will be available <strong>by the end of this week or early next week</strong> for Tasks 1, 6, AES QVIM.</li>
 <li>For <strong>Task 4</strong>, the baseline may be released <strong>sometime next week</strong>. If your baseline is not yet available, prepare your presentation based on a relevant <strong>related system</strong>, and include the same key aspects listed on the next slides — as if it were your baseline.</li>
 </ul>
 </div>
@@ -8941,7 +8941,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Until-02.04.25">Until 02.04.25<a class="anchor-link" href="#Until-02.04.25">¶</a></h1><ul>
 <li>Aspects to look into:<ul>
-<li>What <strong>dataset(s)</strong> is the baseline trained on?</li>
+<li>What <strong>datasets</strong> are the baseline trained on?</li>
 <li>What kind of <strong>input representation</strong> is used (e.g., log-mel spectrogram, waveform)?</li>
 <li>Are there any <strong>data augmentation techniques</strong> (e.g., mixup, SpecAugment, noise injection)?</li>
 <li>What <strong>neural network architecture</strong> is used?</li>
