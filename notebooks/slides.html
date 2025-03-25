@@ -7441,10 +7441,9 @@ main {
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
 <h1 id="Today's-Menu">Today's Menu<a class="anchor-link" href="#Today's-Menu">¶</a></h1><ul>
-<li><strong>Tips &amp; Tricks for building an ML pipeline</strong> [<em>Wednesday, April 2</em>]</li>
-<li><strong>Audio Signal Processing</strong> [<em>Today</em>]</li>
-<li><strong>Your next task</strong> [until <em>Wednesday, April 2</em>]</li>
-<li><strong>Your Presentations</strong></li>
+<li><strong>Audio Signal Processing</strong></li>
+<li><strong>Your next tasks</strong></li>
+<li><strong>Presentations</strong></li>
 </ul>
 </div>
 </div>
@@ -7472,7 +7471,7 @@ main {
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Tips-&amp;-Tricks-for-building-an-ML-pipeline">Tips &amp; Tricks for building an ML pipeline<a class="anchor-link" href="#Tips-&amp;-Tricks-for-building-an-ML-pipeline">¶</a></h1>
+<h1 id="Tips-&amp;-Tricks-for-building-an-ML-pipeline-%5BWednesday,-April-2%5D">Tips &amp; Tricks for building an ML pipeline [<em>Wednesday, April 2</em>]<a class="anchor-link" href="#Tips-&amp;-Tricks-for-building-an-ML-pipeline-%5BWednesday,-April-2%5D">¶</a></h1>
 </div>
 </div>
 </div>
@@ -7819,7 +7818,7 @@ Before running full experiments, verify new code together — four eyes catch mo
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Audio-Signal-Processing">Audio Signal Processing<a class="anchor-link" href="#Audio-Signal-Processing">¶</a></h2><h3 id="Disclaimer:">Disclaimer:<a class="anchor-link" href="#Disclaimer:">¶</a></h3><p>The following section is a <strong>practical introduction</strong> to audio preprocessing for deep learning. It is meant to help you:</p>
+<h2 id="Audio-Signal-Processing">Audio Signal Processing<a class="anchor-link" href="#Audio-Signal-Processing">¶</a></h2><h3 id="Disclaimer:">Disclaimer:<a class="anchor-link" href="#Disclaimer:">¶</a></h3><p>The following section is a <strong>practical introduction</strong> to audio signal processing for deep learning. It is meant to help you:</p>
 <ul>
 <li><strong>Understand</strong> common steps and <strong>hyperparameters</strong> used in audio pipelines</li>
 <li><strong>Interpret preprocessing choices</strong> in research papers and codebases</li>
@@ -7841,14 +7840,17 @@ Before running full experiments, verify new code together — four eyes catch mo
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Overview">Overview<a class="anchor-link" href="#Overview">¶</a></h2><p>Audio signals are almost always converted into a <strong>audio-visual representation</strong>, typically a <strong>spectrogram</strong>, before being used in deep learning models.</p>
-<p>A typical preprocessing pipeline (see <a href="https://github.com/fschmid56/malach24">example pipeline on GitHub</a>) includes:</p>
+<h2 id="Overview-%E2%80%93-Theory">Overview – Theory<a class="anchor-link" href="#Overview-%E2%80%93-Theory">¶</a></h2><p>Let's do a speedrun across the theoretical foundations of a typical audio signal processing pipeline:</p>
 <ul>
-<li><strong>Pre-emphasis filter</strong>: a simple FIR filter applied in the time domain to amplify high frequencies and flatten the spectrum</li>
-<li><strong>Short-Time Fourier Transform (STFT)</strong>: converts the time-domain signal into a time–frequency representation</li>
-<li><strong>Power spectrogram</strong>: compute the squared magnitude of the complex STFT</li>
-<li><strong>Mel filterbank</strong>: project the linear frequency bins onto the mel scale to better match human auditory perception</li>
-<li><strong>Logarithmic compression</strong> → <strong>log mel spectrogram</strong>: approximates human loudness perception by applying a log function</li>
+<li><strong>Sound and Digital Audio Signals</strong>: What is sound, and how do we convert it into a digital signal?</li>
+<li><strong>Digital Filters</strong>: Tools to process the digital signal in time or frequency domain</li>
+<li><strong>Discrete Fourier Transform (DFT)</strong>: Analyze a digital signal in terms of its frequency components</li>
+<li><strong>Magnitude and Phase</strong>: Convert the complex spectrum into a magnitude spectrum</li>
+<li><strong>Frequency Resolution</strong>: Understand the frequency spacing and resolution of the spectrum</li>
+<li><strong>Spectral Leakage and Windowing</strong>: Use window functions to reduce spectral leakage</li>
+<li><strong>Short-Time Fourier Transform (STFT)</strong>: Convert a time-domain signal into a time–frequency representation</li>
+<li><strong>Mel Transform</strong>: Compress the frequency axis based on human auditory perception</li>
+<li><strong>Logarithmic Compression of Amplitude</strong>: Compress the dynamic range → <strong>log mel spectrogram</strong></li>
 </ul>
 </div>
 </div>
@@ -7923,35 +7925,20 @@ Before running full experiments, verify new code together — four eyes catch mo
 </div>
 </div>
 </div>
-</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell">
+</div><div class="fragment"><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea">
-<div class="jp-InputPrompt jp-InputArea-prompt">In [3]:</div>
+<div class="jp-InputPrompt jp-InputArea-prompt">In [22]:</div>
 <div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
 <div class="cm-editor cm-s-jupyter">
 <div class="highlight hl-ipython3"><pre><span></span><span class="kn">from</span> <span class="nn">torchaudio</span> <span class="kn">import</span> <span class="n">transforms</span>
 
 <span class="n">waveform</span><span class="p">,</span> <span class="n">sample_rate</span> <span class="o">=</span> <span class="n">torchaudio</span><span class="o">.</span><span class="n">load</span><span class="p">(</span><span class="n">example_file</span><span class="p">)</span>
-<span class="nb">print</span><span class="p">(</span><span class="n">waveform</span><span class="o">.</span><span class="n">shape</span><span class="p">)</span>
-<span class="n">waveform</span> <span class="o">=</span> <span class="n">waveform</span><span class="o">.</span><span class="n">mean</span><span class="p">(</span><span class="n">dim</span><span class="o">=</span><span class="mi">0</span><span class="p">,</span> <span class="n">keepdim</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>  <span class="c1"># convert to mono</span>
 <span class="n">transform</span> <span class="o">=</span> <span class="n">transforms</span><span class="o">.</span><span class="n">MelSpectrogram</span><span class="p">(</span><span class="n">sample_rate</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="mi">800</span><span class="p">,</span> <span class="n">n_mels</span><span class="o">=</span><span class="mi">80</span><span class="p">)</span>
 <span class="n">mel_specgram</span> <span class="o">=</span> <span class="n">transform</span><span class="p">(</span><span class="n">waveform</span><span class="p">)</span>
 </pre></div>
-</div>
-</div>
-</div>
-</div>
-<div class="jp-Cell-outputWrapper">
-<div class="jp-Collapser jp-OutputCollapser jp-Cell-outputCollapser">
-</div>
-<div class="jp-OutputArea jp-Cell-outputArea">
-<div class="jp-OutputArea-child">
-<div class="jp-OutputPrompt jp-OutputArea-prompt"></div>
-<div class="jp-RenderedText jp-OutputArea-output" data-mime-type="text/plain" tabindex="0">
-<pre>torch.Size([1, 320000])
-</pre>
 </div>
 </div>
 </div>
@@ -8003,7 +7990,7 @@ Before running full experiments, verify new code together — four eyes catch mo
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Our-Starting-Point">Our Starting Point<a class="anchor-link" href="#Our-Starting-Point">¶</a></h2><ul>
+<h2 id="Sound-and-Digital-Audio-Signals">Sound and Digital Audio Signals<a class="anchor-link" href="#Sound-and-Digital-Audio-Signals">¶</a></h2><ul>
 <li><strong>Sound</strong>: variation in air pressure at a point in space as a function of time</li>
 <li>The microphone turns the mechanical energy of a soundwave into an analog electrical signal</li>
 <li>To process it with a computer, we convert it into a <strong>digital signal</strong>, which involves:<ul>
@@ -8021,7 +8008,7 @@ Before running full experiments, verify new code together — four eyes catch mo
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Our-Starting-Point">Our Starting Point<a class="anchor-link" href="#Our-Starting-Point">¶</a></h2><ul>
+<h2 id="Sound-and-Digital-Audio-Signals">Sound and Digital Audio Signals<a class="anchor-link" href="#Sound-and-Digital-Audio-Signals">¶</a></h2><ul>
 <li><strong>Sound</strong>: variation in air pressure at a point in space as a function of time</li>
 <li>The microphone turns the mechanical energy of a soundwave into an analog electrical signal</li>
 <li>To process it with a computer, we convert it into a <strong>digital signal</strong>, which involves:<ul>
@@ -8168,7 +8155,7 @@ $$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Discrete-Fourier-Transform">Discrete Fourier Transform<a class="anchor-link" href="#Discrete-Fourier-Transform">¶</a></h2><ul>
+<h2 id="Discrete-Fourier-Transform-(DFT)">Discrete Fourier Transform (DFT)<a class="anchor-link" href="#Discrete-Fourier-Transform-(DFT)">¶</a></h2><ul>
 <li>The time-domain signal consists of $N$ samples: $x[0] \dots x[N-1]$</li>
 <li>The DFT translates this into $\frac{N}{2} + 1$ sine (imaginary) and cosine (real) amplitudes</li>
 <li>The DFT can be computed via:<ul>
@@ -8216,7 +8203,7 @@ $$</p>
 <h2 id="Magnitude-and-Phase">Magnitude and Phase<a class="anchor-link" href="#Magnitude-and-Phase">¶</a></h2><ul>
 <li><p>In many applications:</p>
 <ul>
-<li>We use only the <strong>magnitude spectrum</strong></li>
+<li>We use only the <strong>magnitude spectrum</strong>— or more often, the <strong>power spectrum</strong> (squared magnitude)</li>
 <li>The <strong>phase</strong> is often ignored — the human ear is mostly <strong>insensitive to phase</strong>, except in some edge cases (e.g., localization, transients)</li>
 </ul>
 </li>
@@ -8412,8 +8399,10 @@ $$</p>
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Mel-Spectrogram">Mel Spectrogram<a class="anchor-link" href="#Mel-Spectrogram">¶</a></h2><ul>
+<h2 id="Mel-Transform">Mel Transform<a class="anchor-link" href="#Mel-Transform">¶</a></h2><ul>
 <li><p>After computing the <strong>STFT</strong>, we usually apply a <strong>Mel filterbank</strong> to transform the linear frequency spectrogram into a <strong>perceptually motivated, compressed representation</strong></p>
+</li>
+<li><p>Motivation from human perception: The human ear <strong>does not perceive frequency linearly</strong>. We are <strong>more sensitive to changes</strong> in <strong>low frequencies</strong> than in <strong>high frequencies</strong>.</p>
 </li>
 <li><p>This can be implemented as a <strong>matrix multiplication</strong>:<br/>
 $$
@@ -8425,8 +8414,6 @@ $$</p>
 <li><strong>Reduce dimensionality</strong> of the spectrogram</li>
 <li><strong>Emphasize features</strong> most relevant to human hearing</li>
 </ul>
-</li>
-<li><p>Motivation from human perception: The human ear <strong>does not perceive frequency linearly</strong>. We are <strong>more sensitive to changes</strong> in <strong>low frequencies</strong> than in <strong>high frequencies</strong>.</p>
 </li>
 </ul>
 </div>
@@ -8442,6 +8429,48 @@ $$</p>
 <h2 id="Mel-Filterbank">Mel Filterbank<a class="anchor-link" href="#Mel-Filterbank">¶</a></h2><center>
 <img alt="drawing" src="figs/mel_filterbank.png" width="600"/>
 </center>
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Logarithmic-Compression-of-Amplitude">Logarithmic Compression of Amplitude<a class="anchor-link" href="#Logarithmic-Compression-of-Amplitude">¶</a></h2><ul>
+<li><p>The human ear <strong>does not perceive loudness linearly</strong>:</p>
+<ul>
+<li>A <strong>10× increase in sound power</strong> results in approximately a <strong>2× increase in perceived loudness</strong></li>
+<li>This follows a <strong>power-law relationship</strong>: $ \text{Loudness} \propto \text{Power}^n $, with $ n \approx 0.3 $</li>
+<li>To handle the wide dynamic range of real-world sounds, we use a <strong>logarithmic scale</strong> — the <strong>decibel (dB)</strong> scale — which aligns well with human perception</li>
+</ul>
+</li>
+<li><p>To convert <strong>sound power</strong> ( P ) to <strong>decibels</strong>:
+$$
+\text{dB} = 10 \cdot \log_{10}\left(\frac{P}{P_{\text{ref}}}\right)
+$$</p>
+</li>
+</ul>
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Overview---Practical-Example">Overview - Practical Example<a class="anchor-link" href="#Overview---Practical-Example">¶</a></h2><p>Let's look at a typical preprocessing pipeline (see <a href="https://github.com/fschmid56/malach24">example pipeline on GitHub</a>):</p>
+<ul>
+<li><strong>Pre-emphasis filter</strong>: a simple FIR filter applied in the time domain to amplify high frequencies and flatten the spectrum</li>
+<li><strong>Short-Time Fourier Transform (STFT)</strong></li>
+<li><strong>Power spectrogram</strong>: compute the squared magnitude of the complex STFT</li>
+<li><strong>Mel Transform</strong></li>
+<li><strong>Logarithmic Amplitude compression</strong> → <strong>log mel spectrogram</strong></li>
+</ul>
 </div>
 </div>
 </div>
@@ -8650,6 +8679,22 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 </div>
 </div>
+</div><div class="jp-Cell jp-CodeCell jp-Notebook-cell jp-mod-noOutputs">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea">
+<div class="jp-InputPrompt jp-InputArea-prompt">In [29]:</div>
+<div class="jp-CodeMirrorEditor jp-Editor jp-InputArea-editor" data-type="inline">
+<div class="cm-editor cm-s-jupyter">
+<div class="highlight hl-ipython3"><pre><span></span><span class="n">spec</span> <span class="o">=</span> <span class="n">torch</span><span class="o">.</span><span class="n">stft</span><span class="p">(</span><span class="n">wav_pree</span><span class="p">,</span> <span class="n">n_fft</span><span class="o">=</span><span class="n">n_fft</span><span class="p">,</span> <span class="n">hop_length</span><span class="o">=</span><span class="n">hop_length</span><span class="p">,</span>
+                  <span class="n">win_length</span><span class="o">=</span><span class="n">win_length</span><span class="p">,</span> <span class="n">window</span><span class="o">=</span><span class="n">window</span><span class="p">,</span> 
+                  <span class="n">return_complex</span><span class="o">=</span><span class="kc">True</span><span class="p">)</span>
+</pre></div>
+</div>
+</div>
+</div>
+</div>
 </div></div></section><section>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper" tabindex="0">
@@ -8841,14 +8886,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h2 id="Why-the-%22Log%22-in-Amplitude?">Why the "Log" in Amplitude?<a class="anchor-link" href="#Why-the-%22Log%22-in-Amplitude?">¶</a></h2><ul>
-<li>The human ear <strong>does not perceive loudness linearly</strong>:<ul>
-<li>A <strong>10× increase in sound power</strong> results in only a <strong>2× increase in perceived loudness</strong></li>
-<li>This is a <strong>logarithmic relationship</strong> between physical intensity and perception</li>
-<li>This is why we use the <strong>decibel (dB)</strong> scale</li>
-</ul>
-</li>
-</ul>
+<h2 id="Log-the-Amplitude">Log the Amplitude<a class="anchor-link" href="#Log-the-Amplitude">¶</a></h2>
 </div>
 </div>
 </div>
@@ -8917,14 +8955,25 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 </div>
 </div>
-</div></section></section><section><section>
+</div>
 <div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
 <div class="jp-Cell-inputWrapper" tabindex="0">
 <div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Until-02.04.25">Until 02.04.25<a class="anchor-link" href="#Until-02.04.25">¶</a></h1><p>Prepare a <strong>short presentation</strong> (<strong>10 minutes</strong>) introducing the <strong>baseline system</strong> for your task.</p>
+<h1 id="Your-next-tasks">Your next tasks<a class="anchor-link" href="#Your-next-tasks">¶</a></h1>
+</div>
+</div>
+</div>
+</div></section><section>
+<div class="jp-Cell jp-MarkdownCell jp-Notebook-cell">
+<div class="jp-Cell-inputWrapper" tabindex="0">
+<div class="jp-Collapser jp-InputCollapser jp-Cell-inputCollapser">
+</div>
+<div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
+</div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
+<h2 id="Until-02.04.25-(one-week)">Until 02.04.25 (one week)<a class="anchor-link" href="#Until-02.04.25-(one-week)">¶</a></h2><p>Prepare a <strong>short presentation</strong> (<strong>10 minutes</strong>) introducing the <strong>baseline system</strong> for your task.</p>
 <ul>
 <li>The <strong>baseline code</strong> will be available <strong>by the end of this week or early next week</strong> for Tasks 1, 6, AES QVIM.</li>
 <li>For <strong>Task 4</strong>, the baseline may be released <strong>sometime next week</strong>. If your baseline is not yet available, prepare your presentation based on a relevant <strong>related system</strong>, and include the same key aspects listed on the next slides — as if it were your baseline.</li>
@@ -8939,9 +8988,9 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Until-02.04.25">Until 02.04.25<a class="anchor-link" href="#Until-02.04.25">¶</a></h1><ul>
+<h2 id="Until-02.04.25-(one-week)">Until 02.04.25 (one week)<a class="anchor-link" href="#Until-02.04.25-(one-week)">¶</a></h2><ul>
 <li>Aspects to look into:<ul>
-<li>What <strong>datasets</strong> are the baseline trained on?</li>
+<li>What <strong>datasets</strong> is the baseline trained on?</li>
 <li>What kind of <strong>input representation</strong> is used (e.g., log-mel spectrogram, waveform)?</li>
 <li>Are there any <strong>data augmentation techniques</strong> (e.g., mixup, SpecAugment, noise injection)?</li>
 <li>What <strong>neural network architecture</strong> is used?</li>
@@ -8966,7 +9015,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Until-09.04.25">Until 09.04.25<a class="anchor-link" href="#Until-09.04.25">¶</a></h1><ul>
+<h2 id="Until-09.04.25-(two-weeks)">Until 09.04.25 (two weeks)<a class="anchor-link" href="#Until-09.04.25-(two-weeks)">¶</a></h2><ul>
 <li>Prepare a presentation (10 minutes).</li>
 <li>Successfully reproduce the baseline results and show us the logged metrics.<ul>
 <li>Let us know <strong>soon</strong> if you encounter any problems.</li>
@@ -8984,7 +9033,7 @@ Real spec shape:  torch.Size([1, 513, 1000, 2])
 </div>
 <div class="jp-InputArea jp-Cell-inputArea"><div class="jp-InputPrompt jp-InputArea-prompt">
 </div><div class="jp-RenderedHTMLCommon jp-RenderedMarkdown jp-MarkdownOutput" data-mime-type="text/markdown">
-<h1 id="Your-Presentations">Your Presentations<a class="anchor-link" href="#Your-Presentations">¶</a></h1>
+<h1 id="Presentations">Presentations<a class="anchor-link" href="#Presentations">¶</a></h1>
 </div>
 </div>
 </div>
